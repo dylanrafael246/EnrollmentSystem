@@ -1,61 +1,160 @@
 # Interface-Driven Enrollment System
 
-A Java console application implementing a college enrollment system using strict Interface-based architecture.
+A console-based (CLI) enrollment system built in Java as a Capstone Project for 2nd Year IT.
+Demonstrates **Interface Architecture**, **CRUD**, **Business Logic**, **Custom Exceptions**, and **JUnit Testing**.
+
+---
+
+## Features
+
+### Baseline (Required)
+- ✅ Strict Interface Architecture (`IStudentService`, `IEnrollmentService`, etc.)
+- ✅ Full CRUD for Students, Instructors, and Courses
+- ✅ Section capacity validation with `SectionFullException`
+- ✅ Tuition calculation (`PHP 1500 × units`)
+- ✅ Payment processing and balance tracking
+- ✅ Department → Section → Student hierarchy view
+
+### Bonus Features Implemented
+- 🎓 **Prerequisite Checking** — can't enroll in CS103 without passing CS102 first
+- 💸 **Scholarship Discounts** — apply a percentage discount to tuition
+- 🛡️ **Duplicate ID Prevention** — `DuplicateIdException` for Student, Instructor, Course, Department
+- 🔢 **Input Validation** — try-catch on all Scanner inputs, no crashes on bad input
+- 🧪 **10 JUnit Unit Tests** — covering capacity, tuition, prerequisites, scholarships, duplicates
+- 🌱 **Demo Data Seeder** — preloaded data so you can test right away
+
+---
 
 ## Project Structure
 
 ```
-src/
- └── main/java/com/enrollment/
-      ├── entities/       - Data classes (Student, Instructor, Course, Section, Department, TuitionFeePayment)
-      ├── interfaces/     - Service contracts (IStudentService, IInstructorService, etc.)
-      ├── services/       - Concrete implementations (StudentServiceImpl, etc.)
-      ├── exceptions/     - Custom exceptions (SectionFullException, DuplicateIdException, etc.)
-      └── cli/            - Main.java (console UI)
- └── test/java/com/enrollment/
-      └── EnrollmentSystemTest.java - 13 unit tests
+EnrollmentSystem/
+├── src/
+│   ├── main/java/com/enrollment/
+│   │   ├── entities/          ← Data classes (Student, Instructor, Course, etc.)
+│   │   ├── exceptions/        ← Custom exceptions
+│   │   ├── interfaces/        ← Service contracts (IStudentService, etc.)
+│   │   ├── services/          ← Implementations (*ServiceImpl)
+│   │   └── cli/               ← Console UI (EnrollmentCLI, DataSeeder)
+│   └── test/java/com/enrollment/
+│       └── EnrollmentSystemTest.java  ← 10 JUnit 5 tests
+└── pom.xml                    ← Maven build file
 ```
+
+---
 
 ## How to Run
 
 ### Prerequisites
-- Java 17 or higher
+- Java 17+
+- Maven 3.6+
 
-### Compile & Run (Main App)
+### Run the App
 ```bash
-chmod +x run.sh
-./run.sh
+mvn compile
+mvn exec:java -Dexec.mainClass="com.enrollment.cli.EnrollmentCLI"
 ```
 
-### Compile & Run (Unit Tests)
+Or build a JAR and run it:
 ```bash
-./run.sh test
+mvn package
+java -jar target/EnrollmentSystem.jar
 ```
 
-### Manual Compile
+### Run Tests
 ```bash
-mkdir -p out
-find src/main/java -name "*.java" | xargs javac -d out
-java -cp out com.enrollment.cli.Main
+mvn test
 ```
 
-## Features
+---
 
-- **Student CRUD** - Add, view, update, delete students
-- **Instructor Management** - Add instructors and assign them to sections
-- **Course Management** - CRUD with prerequisite course support
-- **Enrollment** - Enroll students with capacity checks and prerequisite validation
-- **Tuition** - Calculate fees (PHP 1,500/unit + PHP 2,500 misc), process payments, apply scholarship discounts
-- **Department Hierarchy View** - See Department → Sections → Instructor + Students
-- **Custom Exceptions** - SectionFullException, DuplicateIdException, PrerequisiteNotMetException, InvalidPaymentAmountException
-- **13 Unit Tests** covering all major business logic paths
+## Git Workflow (How this was developed)
 
-## Demo Data (Pre-loaded on Start)
+This project followed the **Feature Branch Workflow**:
 
-| Type | Data |
-|------|------|
-| Courses | CS101, CS102 (prereq: CS101), MATH101, ENG101 |
-| Instructors | I001 - Dr. Maria Santos, I002 - Prof. Juan dela Cruz |
-| Sections | SEC001 BSIT-1A (cap: 3), SEC002 BSIT-1B (cap: 30), SEC003 BSIT-2A |
-| Students | S001 Alice, S002 Bob, S003 Clara (has CS101 completed) |
-| Department | D001 - College of Computer Studies |
+```
+main
+ ├── feature/project-setup
+ ├── feature/entity-classes
+ ├── feature/service-interfaces
+ ├── feature/student-crud
+ ├── feature/instructor-crud
+ ├── feature/course-crud
+ ├── feature/enrollment-service
+ ├── feature/tuition-service
+ ├── feature/capacity-validation
+ ├── feature/prerequisite-checking
+ ├── feature/scholarship-logic
+ ├── feature/cli-menus
+ ├── feature/data-seeder
+ └── feature/unit-tests
+```
+
+### Commit Message Convention
+```
+Add Student entity and constructor
+Implement IStudentService interface
+Add StudentServiceImpl with duplicate ID check
+Fix capacity validation logic in EnrollmentServiceImpl
+Add prerequisite checking in enrollStudentInSection
+Create tuition calculation and payment logic
+Add scholarship discount feature to TuitionService
+Write JUnit tests for enrollment and tuition logic
+Add CLI menus for all services
+Add DataSeeder for demo data on startup
+```
+
+---
+
+## GitHub Setup Instructions
+
+```bash
+# 1. Initialize repository
+git init
+git add .
+git commit -m "Initial project setup with all entities and structure"
+
+# 2. Create GitHub repo, then push
+git remote add origin https://github.com/YOUR_USERNAME/EnrollmentSystem.git
+git branch -M main
+git push -u origin main
+
+# 3. Example feature branch workflow
+git checkout -b feature/student-crud
+# ... do your work ...
+git add .
+git commit -m "Add Student CRUD with duplicate ID validation"
+git push origin feature/student-crud
+# Then go to GitHub → Compare & pull request → Merge
+```
+
+---
+
+## Default Tuition Rate
+
+| Rate       | Value         |
+|------------|---------------|
+| Per Unit   | PHP 1,500.00  |
+| 3-unit course | PHP 4,500.00 |
+| 6-unit load | PHP 9,000.00 |
+
+---
+
+## Test Coverage
+
+| Test # | What it tests |
+|--------|---------------|
+| 1 | Section full → `SectionFullException` thrown |
+| 2 | Enrollment succeeds when space available |
+| 3 | Tuition calculation: units × PHP 1500 |
+| 4 | 50% scholarship halves tuition |
+| 5 | Valid payment reduces balance |
+| 6 | Overpayment → `InvalidPaymentAmountException` |
+| 7 | Prerequisite not met → `PrerequisiteNotMetException` |
+| 8 | Prerequisite met → enrollment succeeds |
+| 9 | Duplicate student ID → `DuplicateIdException` |
+| 10 | Full payment → status shows "FULLY PAID" |
+
+---
+
+*Capstone Project — College of Computer Studies*
