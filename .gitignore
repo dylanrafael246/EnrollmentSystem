@@ -1,7 +1,0 @@
-out/
-*.class
-*.jar
-.idea/
-*.iml
-.vscode/
-__pycache__/
